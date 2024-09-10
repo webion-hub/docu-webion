@@ -1,0 +1,8 @@
+{
+  "label": "Filtering",
+  "position": 200,
+  "link": {
+    "type": "generated-index",
+    "description": "Find out how we filter in DataGrids in Webion."
+  }
+}
