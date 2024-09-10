@@ -73,12 +73,12 @@ const config: Config = {
       },
       items: [
         {
-          to: "/frontend",
+          to: "/category/frontend",
           position: "left",
           label: "Frontend",
         },
         {
-          to: "/backend",
+          to: "/category/backend",
           position: "left",
           label: "Backend",
         },
