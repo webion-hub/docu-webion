@@ -1,0 +1,93 @@
+---
+title: Inline Editing
+sidebar_position: 400
+---
+
+import Tabs from "@theme/Tabs";
+
+import TabItem from "@theme/TabItem";
+
+import Admonition from "@theme/Admonition";
+
+# Inline Editing [<MuiIcon />](https://mui.com/x/react-data-grid/editing/)
+
+## Caso Standard
+
+Le DataGrid implementano di default dei controlli per editare delle celle.
+
+Puoi entrare in modalità di edit (in una cella abilitata all'editing) premendo:
+
+- `Enter`
+- `Backspace` o `Delete` (cancellando il contenuto della cella)
+- Un qualsiasi valore che venga accettato dal campo di input (cancella il contenuto ed inserisce quello premuto)
+- Chiamando `startCellEditMode` o `startRowEditMode`
+
+Puoi uscire dalla modalità di edit premendo:
+
+- `Escape` (ignorando tutte le modifiche fatte fino a quel momento in modalità di edit)
+- `Tab` (salvando il contenuto della cella)
+- `Enter` (salvando il contenuto della cella e muovendosi nella cella dopo della stessa colonna)
+- Cliccando fuori dalla cella o della riga (salvando il contenuto della cella)
+- Chiamando `stopCellEditMode` o `stopRowEditMode` (importando `ignoreModifications: true` tra le opzioni del metodo verranno ignorate tutte le modifiche fatte fino a quel momento in modalità di edit)
+
+## Event Listeners
+
+### onCellEditStop
+
+Alla fine di un edit al listener verranno passati 2 argomenti:
+
+- I parametri (`params: GridCellEditStopParams`) (contenenti la `reason`, utilizzabile tramite l'enum `GridCellEditStopReasons`)
+- L'evento (`event: MuiEvent`)
+
+### processRowUpdate
+
+> Attenzione che il metodo DEVE ritornare una riga, che sia la vecchia, la nuova od una modificata. Non accetta un `undefined` o `null`
+
+![processRowUpdate](/img/datagrids/processRowUpdate.png)
+
+Nel caso l'aggiornamento della riga non vada a buon fine viene chiamato il metodo `onProcessRowUpdateError`
+
+### valueSetter
+
+È molto importante da impostare il `valueSetter` nel caso la proprietà `valueGetter` è stata inserita
+
+## Validation
+
+### preProcessEditCellProps
+
+Se la priorietà `preProcessEditCellProps` viene impostata ad ogni aggiornamento verrà chiamata.
+All'interno della funziona si ha accesso a 4 proprietà:
+
+- `id`
+- `row`
+- `props`: Contiene il `value` già processato dal value parser.
+- `hasChanged`: Boolean comodo per vedere se il valore è cambiato da prima.
+- `otherFieldsProps`: Solo in modalità modifica a riga. Ti passa i props delle altre celle della riga.
+
+Per ritornare un errore nel caso l'update non sia andato a buon fine impostare la proprietà `error` di `props` a true in questo modo:
+
+```ts {6} highligthLines
+const columns: GridColDef[] = [
+  {
+    field: "firstName",
+    preProcessEditCellProps: (params: GridPreProcessEditCellProps) => {
+      const hasError = params.props.value.length < 3;
+      return { ...params.props, error: hasError };
+    },
+  },
+];
+```
+
+:::warning
+
+**Se viene cambiato il valore di `value` in `props` non succederà nulla!**\
+Se si vuole cambiare il `value` bisogna farlo con un value parser prima.
+with _Markdown_ `syntax`. Check [this `api`](#).
+
+:::
+
+:::info
+
+Mentre il valore sta venendo processato il componente di edit riceverà un parametro chiamato `isProcessingProps` impostato a `true`, usare questo valore per renderizzare il loading.
+
+:::

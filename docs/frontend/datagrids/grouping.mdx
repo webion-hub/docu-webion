@@ -1,0 +1,85 @@
+---
+title: Grouping
+sidebar_position: 500
+---
+
+È consigliabile usare anche la proprietà `disableRowSelectionOnClick` per evitare interazioni non volute al click di un gruppo.
+
+Per usare il grouping in modo controllato sfruttare la proprietà `rowGroupingModel` e il metodo `onRowGroupingModelChange` sfuttando il tipo `GridRowGroupingModel`
+
+## Nascondere Colonne Duplicate
+
+Di base il grouping aggiunge una colonna dedicata a visualizzare i dati gruppati. Per togliere le colonne duplicate non usate nel grouping basta prendere l'`initialState` con l'hook `useKeepGroupedColumnsHidden`
+
+## Posizione delle Grouped Columns
+
+Di base il grouping metterà tutte le colonne allineate a sinistra. Se si vuole spostare il dato sotto la colonna giusta usare `rowGroupingColumnMode="multiple"`
+
+## renderCell Custom
+
+Di base viene usato il `renderCell` della colonna originaria per stampare la colonna gruppata. Se vuoi controllarlo in modo custom nel `renderCell` basta inserire un if come mostrato qua sotto:
+
+```ts
+renderCell: (params) => {
+  if (params.rowNode.type === "group") {
+    return <GroupComponent params={params} />;
+  }
+
+  return <Component params={params} />;
+};
+```
+
+## groupingColDef
+
+Per implementare un grouping particolare è consigliato l'utilizzo della proprietà `groupingColDef`.
+Se gli si passa un oggetto la ColDef viene applicata a TUTTE le colonne.
+Per modificare il comportamento solo di alcune colonne passare alla proprietà una funzione e usare il parametro `params.fields` per controllare.
+
+Puoi nascondere il numero di figli usando la proprietà `hideDescendantCount`.
+
+```ts
+groupingColDef={(params) => {
+  const override: GridGroupingColDefOverride = {};
+  if (params.fields.includes('director')) {
+    return {
+      headerName: 'Director',
+      hideDescendantCount: true,
+      valueFormatter: (value, row) => {
+        const rowId = apiRef.current.getRowId(row);
+        const rowNode = apiRef.current.getRowNode(rowId);
+        if (
+          rowNode?.type === 'group' &&
+          rowNode?.groupingField === 'director'
+        ) {
+          return `by ${rowNode.groupingKey ?? ''}`;
+        }
+        return undefined;
+      },
+    };
+  }
+
+  return override;
+}}
+```
+
+## groupingValueGetter
+
+Il valore di una colonna gruppata deve essere uno di questi tipi: `string`, `number`, `null`, `undefined`.
+
+Se la tua colonna contiene dati più complessi è consigliato usare il metodo `groupingValueGetter` per trasformare il dato in uno valido.
+
+Attenzione che se è stato implementato un `valueGetter` custom per la colonna questo NON sarà il valore passato al `groupingValueGetter`, ma invece sarà `row[field]`
+
+```ts
+const columns: GridColDef[] = [
+  {
+    field: "composer",
+    groupingValueGetter: (value) => value.name,
+  },
+  // ...
+];
+```
+
+## Delle righe non vengono gruppate [<MuiIcon />](https://mui.com/x/react-data-grid/row-grouping/#rows-with-missing-groups)
+
+Molto probabilmente succede perchè la colonna che stai usando per fare il grouping in quella riga è `null` o `undefined`.

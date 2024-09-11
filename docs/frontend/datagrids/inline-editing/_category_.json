@@ -1,8 +1,0 @@
-{
-  "label": "Inline Edit",
-  "position": 300,
-  "link": {
-    "type": "generated-index",
-    "description": "Find out how we edit inline in DataGrids in Webion."
-  }
-}
