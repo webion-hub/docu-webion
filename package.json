@@ -30,6 +30,7 @@
     "react-live": "^4.1.7"
   },
   "devDependencies": {
+    "@docusaurus/eslint-plugin": "^3.5.2",
     "@docusaurus/module-type-aliases": "3.5.2",
     "@docusaurus/tsconfig": "3.5.2",
     "@docusaurus/types": "3.5.2",
